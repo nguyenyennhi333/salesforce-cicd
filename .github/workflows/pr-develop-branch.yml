@@ -171,11 +171,19 @@ jobs:
             # If the env variable does not equal 'all', we know that there is a list of
             # tests that can be run
 
-            - name: 'Check-only deploy delta changes - run specified tests'
+            - name: 'Run specified tests and capture results'
               if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != 'none' }}
               run: |
-                  echo ${{env.APEX_TESTS}}
-                  sf apex run test --testlevel RunSpecifiedTests --tests ${{env.APEX_TESTS}} --json
+                sf apex run test --testlevel RunSpecifiedTests --tests ${{env.APEX_TESTS}} --json > test-results.json
+
+            - name: 'Check test coverage'
+              if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != 'none' }}
+              run: |
+                python check_coverage.py
+
+            - name: 'Deploy if coverage is sufficient'
+              if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != 'none' && steps.check-coverage.outputs.coverage-ok == 'true' }}
+              run: |
                   sf project deploy start
 
             # If the env variable equals 'none', deploy without running any tests
