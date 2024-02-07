@@ -56,7 +56,7 @@ jobs:
               run: |
                   echo ${{env.APEX_TESTS}}
                   sf project deploy start "changed-sources/force-app" --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
-                  
+
             # If the env variable equals 'none', deploy without running any tests
             - name: 'Check-only deploy delta changes - no tests'
               if: ${{ env.APEX_TESTS == 'none' }}
