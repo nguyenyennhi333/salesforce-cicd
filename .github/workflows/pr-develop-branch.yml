@@ -179,7 +179,7 @@ jobs:
             - name: 'Check test coverage'
               if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != 'none' }}
               run: |
-                python check_coverage.py
+                python ./check_coverage.py
 
             - name: 'Deploy if coverage is sufficient'
               if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != 'none' && steps.check-coverage.outputs.coverage-ok == 'true' }}
