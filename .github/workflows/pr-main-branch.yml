@@ -55,7 +55,7 @@ jobs:
               if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != 'none' }}
               run: |
                   echo ${{env.APEX_TESTS}}
-                  sf project deploy start -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
+                  sf project deploy start "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --tests ${{env.APEX_TESTS}} --json
 
             # If the env variable equals 'none', deploy without running any tests
             - name: 'Check-only deploy delta changes - no tests'
