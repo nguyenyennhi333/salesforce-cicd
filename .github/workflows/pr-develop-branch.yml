@@ -167,36 +167,9 @@ jobs:
               with:
                 sarif_file: changed-sources/apexScanResults.sarif
 
-            # We do a check-only deploy and we only run the tests specified in the PR
-            # If the env variable does not equal 'all', we know that there is a list of
-            # tests that can be run
+            # This is Dev Environment so we'll only run validation
 
-            - name: 'Run specified tests and capture results'
-              if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != 'none' }}
-              run: |
-                sf apex run test --testlevel RunSpecifiedTests --tests ${{env.APEX_TESTS}} --json > test-results.json
+            - name: Run validation for development branch
+              run: sf project deploy validate --source-dir changed-sources/force-app
 
-            - name: 'Check test coverage'
-              if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != 'none' }}
-              run: |
-                python ./check_coverage.py
-
-            - name: 'Deploy if coverage is sufficient'
-              if: ${{ env.APEX_TESTS != 'all' && env.APEX_TESTS != 'none' && steps.check-coverage.outputs.coverage-ok == 'true' }}
-              run: |
-                  sf project deploy start
-
-            # If the env variable equals 'none', deploy without running any tests
-            - name: 'Check-only deploy delta changes - no tests'
-              if: ${{ env.APEX_TESTS == 'none' }}
-              run: |
-                sf project deploy start
-            
-            # If the env variable equals all, we run all tests
-            - name: 'Check-only deploy delta changes - run all tests'
-              if: ${{ env.APEX_TESTS == 'all' }}
-              run: |
-                  sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunLocalTests  --json
-
-            - name: 'Deploy destructive changes (if any)'
-              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings
+            ##TODO: Add destructive change
